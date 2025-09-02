@@ -1,0 +1,194 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNHS ICT Lab Preventive Maintenance Q&A</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .question-card { transition: all 0.3s ease; }
+        .question-card:hover { transform: translateY(-5px); }
+        .answer { display: none; }
+        .answer.show { display: block; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-blue-600 text-white py-6">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold">PNHS ICT Lab Preventive Maintenance Q&A</h1>
+            <p class="mt-2">Explore questions and answers about our preventive maintenance proposal</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="space-y-6">
+            <!-- Purpose Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">1. Purpose</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What specific problem in PNHS are you trying to address with this proposal?</h3>
+                        <p class="answer mt-2 text-gray-700">We want to address the issue of slow, malfunctioning, or easily damaged computers in the ICT lab due to lack of regular maintenance.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Why is preventive maintenance important for the school’s computer laboratory?</h3>
+                        <p class="answer mt-2 text-gray-700">It keeps the computers in good condition, reduces breakdowns, and ensures students and teachers can use them effectively for learning.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">If the computers can still function without preventive maintenance, why do we need it?</h3>
+                        <p class="answer mt-2 text-gray-700">Functioning without care will only cause bigger, more expensive problems later. Preventive maintenance saves time and resources in the long run.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How is this different from just repairing computers when they break?</h3>
+                        <p class="answer mt-2 text-gray-700">Repair is reactive—it only happens after damage. Preventive maintenance is proactive—it avoids problems before they happen.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Relevance Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">2. Relevance</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How does this proposal benefit the students directly?</h3>
+                        <p class="answer mt-2 text-gray-700">Students will have faster, more reliable computers for activities, projects, and research, leading to better learning experiences.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What will teachers gain from implementing preventive maintenance?</h3>
+                        <p class="answer mt-2 text-gray-700">Teachers won’t waste time fixing technical problems during lessons. It helps them teach smoothly using technology.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">In what way does this project support the goals of ICT education in PNHS?</h3>
+                        <p class="answer mt-2 text-gray-700">ICT education requires functional computers. With preventive maintenance, students gain consistent access to tools they need for skills development.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Why is this project more urgent than other possible proposals for the school?</h3>
+                        <p class="answer mt-2 text-gray-700">Computers are used daily and are central in modern education. Without maintenance, the lab may become unusable, directly affecting student performance.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Feasibility Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">3. Feasibility</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Who will be responsible for carrying out the preventive maintenance?</h3>
+                        <p class="answer mt-2 text-gray-700">The ICT coordinator, with assistance from trained student volunteers and support from our group.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How often do you plan to conduct the maintenance?</h3>
+                        <p class="answer mt-2 text-gray-700">At least once every two months, with minor checks weekly if possible.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What resources or tools will be needed, and are they already available in the school?</h3>
+                        <p class="answer mt-2 text-gray-700">Basic tools like screwdrivers, cleaning kits, and software checkups. Some are already available in the ICT room, while the rest are low-cost.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Do you think your group’s plan is realistic for a large school like PNHS?</h3>
+                        <p class="answer mt-2 text-gray-700">Yes, because the plan is simple, low-cost, and can be scaled. We focus on one lab first, then expand as needed.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Implementation Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">4. Implementation</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Can you walk us through the step-by-step process of how this project will be done?</h3>
+                        <p class="answer mt-2 text-gray-700">Step 1: Inspection of computers. Step 2: Cleaning and checking for dust or loose parts. Step 3: Software updates and scans. Step 4: Recording results. Step 5: Repeat schedule every 2 months.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What is your proposed schedule for maintenance, and why did you choose it?</h3>
+                        <p class="answer mt-2 text-gray-700">Every two months, because this balances between avoiding frequent interruptions and keeping computers in good shape.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How will you monitor if preventive maintenance is actually effective?</h3>
+                        <p class="answer mt-2 text-gray-700">By recording the performance of computers before and after maintenance, and tracking reduced breakdown reports.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What role will students or ICT staff play in making this project work?</h3>
+                        <p class="answer mt-2 text-gray-700">Students can help in basic cleaning and reporting issues, while ICT staff handles technical parts.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Challenges / Sustainability Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">5. Challenges / Sustainability</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What possible problems might arise during implementation?</h3>
+                        <p class="answer mt-2 text-gray-700">Lack of time, limited cleaning materials, or not enough volunteers.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How will you make sure the project continues even after your group is no longer here?</h3>
+                        <p class="answer mt-2 text-gray-700">We propose creating a simple checklist system that ICT staff and future student leaders can continue using.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What if the school does not have enough funds for tools or cleaning materials?</h3>
+                        <p class="answer mt-2 text-gray-700">We can use low-cost alternatives, reuse materials, or request small support from PTA or donations.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How will you measure the long-term success of your project?</h3>
+                        <p class="answer mt-2 text-gray-700">If computers last longer, break less often, and remain usable for classes, then the project is successful.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 PNHS ICT Lab Maintenance Team</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
