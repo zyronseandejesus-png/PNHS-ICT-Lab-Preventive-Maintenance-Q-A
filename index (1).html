@@ -1,0 +1,213 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socratic Mock Defense Q&A (Exams vs. Performance Tasks)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .question-card { transition: all 0.3s ease; }
+        .question-card:hover { transform: translateY(-5px); }
+        .answer { display: none; }
+        .answer.show { display: block; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-blue-600 text-white py-6">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold">Socratic Mock Defense Q&A (Exams vs. Performance Tasks)</h1>
+            <p class="mt-2">Explore questions and answers about balancing exams and performance tasks</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="space-y-6">
+            <!-- Purpose / Clarification Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">1. Purpose / Clarification</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Why do schools still rely on written exams to measure learning?</h3>
+                        <p class="answer mt-2 text-gray-700">Schools rely on exams because they are faster and easier to administer. But exams mostly test memory, not real understanding. That’s why we believe schools should balance exams with more performance tasks.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What is the true purpose of exams—testing memory or testing understanding?</h3>
+                        <p class="answer mt-2 text-gray-700">In reality, exams focus on short-term recall. But true education should test understanding, skills, and application. Performance tasks are better at achieving that purpose.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Should education focus more on recall or on application of knowledge?</h3>
+                        <p class="answer mt-2 text-gray-700">Education should focus on application. In the real world, what matters is how we use knowledge, not how much we can memorize in one sitting.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assumptions Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">2. Assumptions</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What assumptions are we making if we say exams represent a student’s intelligence?</h3>
+                        <p class="answer mt-2 text-gray-700">We assume all students learn the same way. But intelligence is broader—it includes creativity, problem-solving, and skills that exams cannot measure.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Do exams assume that all students learn at the same pace and in the same way?</h3>
+                        <p class="answer mt-2 text-gray-700">Yes, and that’s unfair. Some students excel in projects or oral defense, while others do better in exams. PTs give more room for different types of learners to shine.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Is it fair to assume that a single exam can capture a student’s real skills?</h3>
+                        <p class="answer mt-2 text-gray-700">No, because one bad day can ruin a grade. Performance tasks, on the other hand, give multiple chances to show ability.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Evidence / Reasoning Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">3. Evidence / Reasoning</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What are the weaknesses of traditional exams in assessing real understanding?</h3>
+                        <p class="answer mt-2 text-gray-700">Exams usually promote memorization, and many students forget what they studied after the test. They also don’t measure long-term skills like teamwork, creativity, or communication.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Do exam results always reflect what students actually learned throughout the quarter?</h3>
+                        <p class="answer mt-2 text-gray-700">Not always. Some students “cram” and pass, but forget later. PTs show consistent effort and growth.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How do performance-based tasks improve critical thinking and real-life skills?</h3>
+                        <p class="answer mt-2 text-gray-700">PTs require students to research, analyze, create, and present. These are the same skills needed in work and life, unlike exams that only test recall.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">In what ways can performance tasks be more engaging than exams?</h3>
+                        <p class="answer mt-2 text-gray-700">PTs let students be creative—like making projects, reports, or presentations. They feel more rewarding than answering test papers.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Are performance-based outputs a fairer way to assess students’ abilities?</h3>
+                        <p class="answer mt-2 text-gray-700">Yes, because PTs consider different skills and learning styles. Everyone has a chance to contribute and perform, not just memorize.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Implications / Consequences Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">4. Implications / Consequences</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What would be the consequences if schools continue to prioritize exams over PTs?</h3>
+                        <p class="answer mt-2 text-gray-700">Students will stay stressed, focus only on passing tests, and miss out on real skills they need for future jobs or life.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Would removing written exams help reduce student stress and pressure?</h3>
+                        <p class="answer mt-2 text-gray-700">Yes. Exam week is one of the most stressful parts of school. Reducing exams and focusing on PTs spreads the workload and lowers anxiety.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How might shifting to PTs affect students’ preparation for college and future jobs?</h3>
+                        <p class="answer mt-2 text-gray-700">It will prepare them better. Colleges and jobs look for skills, not just grades. PTs train students in presentations, teamwork, and problem-solving.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">If exams are reduced, what positive impact might this have on mental health and learning motivation?</h3>
+                        <p class="answer mt-2 text-gray-700">Students will feel less pressure and more motivated to learn for understanding, not just for passing a test.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alternatives / Feasibility Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">5. Alternatives / Feasibility</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Could schools implement a balance of both exams and PTs instead of fully removing one?</h3>
+                        <p class="answer mt-2 text-gray-700">Yes, balance is possible. But we believe PTs should carry more weight because they measure deeper learning.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What challenges might schools face if exams were replaced with performance tasks?</h3>
+                        <p class="answer mt-2 text-gray-700">Teachers may face longer grading time, and some schools may lack resources. But with proper planning and rubrics, these challenges can be managed.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">How can teachers fairly grade performance tasks when outputs vary widely?</h3>
+                        <p class="answer mt-2 text-gray-700">By using clear rubrics with criteria like creativity, effort, and accuracy. This ensures fairness even with different outputs.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What systems can schools use to ensure PTs are not just “projects for grades” but real learning tools?</h3>
+                        <p class="answer mt-2 text-gray-700">Schools should connect PTs to real-life situations and require presentations or defenses, not just outputs.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reflection / Evaluation Section -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">6. Reflection / Evaluation</h2>
+                <div class="space-y-4">
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Do you believe exams are outdated in the 21st-century education system? Why or why not?</h3>
+                        <p class="answer mt-2 text-gray-700">Yes, because today’s education should focus on skills for the modern world, not just memorization. Exams are limited for that.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">Which is a better measure of success in real life—passing exams or excelling in practical outputs?</h3>
+                        <p class="answer mt-2 text-gray-700">Excelling in practical outputs. In jobs, no one asks your test scores—they look at what you can actually do.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">If you were part of the school council or DepEd, would you prioritize exams or PTs? Why?</h3>
+                        <p class="answer mt-2 text-gray-700">I would prioritize PTs because they prepare students for real challenges and reflect actual learning better.</p>
+                    </div>
+                    <div class="question-card bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium cursor-pointer" onclick="toggleAnswer(this)">What kind of assessment did you personally learn more from—exams or PTs?</h3>
+                        <p class="answer mt-2 text-gray-700">PTs, because I can apply what I learned, express creativity, and gain skills that last longer than just memorizing.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 Socratic Mock Defense Team</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleAnswer(element) {
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
